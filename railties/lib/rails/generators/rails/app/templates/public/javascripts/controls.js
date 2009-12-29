@@ -59,6 +59,7 @@ Autocompleter.Base = Class.create({
     this.options.tokens       = this.options.tokens || [];
     this.options.frequency    = this.options.frequency || 0.4;
     this.options.minChars     = this.options.minChars || 1;
+    this.options.hintText     = this.options.hintText || "";
     this.options.onShow       = this.options.onShow ||
       function(element, update){
         if(!update.style.position || update.style.position=='absolute') {
@@ -87,6 +88,7 @@ Autocompleter.Base = Class.create({
 
     Event.observe(this.element, 'blur', this.onBlur.bindAsEventListener(this));
     Event.observe(this.element, 'keydown', this.onKeyPress.bindAsEventListener(this));
+    Event.observe(this.element, 'focus', this.onFocus.bindAsEventListener(this));
   },
 
   show: function() {
@@ -160,6 +162,13 @@ Autocompleter.Base = Class.create({
     if(this.observer) clearTimeout(this.observer);
       this.observer =
         setTimeout(this.onObserverEvent.bind(this), this.options.frequency*1000);
+  },
+
+  onFocus: function(event) {
+    if (this.options.minChars == -1 && (this.element.value == this.options.hintText || this.element.value == "")) {
+      this.element.value == "";
+      this.onKeyPress(event);
+    }
   },
 
   activate: function() {
