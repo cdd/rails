@@ -159,7 +159,7 @@ module ActiveRecord
             if @reflection.source_reflection.options[:as]
               polymorphic_join = "AND %s.%s = %s" % [
                 @reflection.quoted_table_name, "#{@reflection.source_reflection.options[:as]}_type",
-                @owner.class.quote_value(@reflection.through_reflection.klass.name)
+                @owner.class.quote_value(@reflection.through_reflection.klass.base_class.name)
               ]
             end
           end
