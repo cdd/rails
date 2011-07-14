@@ -498,8 +498,8 @@ module ActionMailer #:nodoc:
         # "the_template_file.text.html.erb", etc.). Only do this if parts
         # have not already been specified manually.
         if @parts.empty?
-          Dir.glob("#{template_path}/#{@template}.*").each do |path|
-            template = template_root["#{mailer_name}/#{File.basename(path)}"]
+          Dir.glob(File.join(template_path, "#{@template}.*")) do |path|
+            template = template_root[File.join(mailer_name, File.basename(path))]
 
             # Skip unless template has a multipart format
             next unless template && template.multipart?
@@ -522,7 +522,7 @@ module ActionMailer #:nodoc:
         # normal template exists (or if there were no implicit parts) we render
         # it.
         template_exists = @parts.empty?
-        template_exists ||= template_root["#{mailer_name}/#{@template}"]
+        template_exists ||= template_root[File.join(mailer_name, @template)]
         @body = render_message(@template, @body) if template_exists
 
         # Finally, if there are other message parts and a textual body exists,
@@ -591,7 +591,7 @@ module ActionMailer #:nodoc:
       def render(opts)
         body = opts.delete(:body)
         if opts[:file] && (opts[:file] !~ /\// && !opts[:file].respond_to?(:render))
-          opts[:file] = "#{mailer_name}/#{opts[:file]}"
+          opts[:file] = File.join(mailer_name, opts[:file])
         end
 
         begin
