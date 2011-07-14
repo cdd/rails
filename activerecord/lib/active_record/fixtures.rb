@@ -1,6 +1,6 @@
 require 'erb'
 require 'yaml'
-require 'csv'
+# require 'csv' # KPD: causes conflicts for us under ruby 1.8.7
 require 'zlib'
 require 'active_support/dependencies'
 require 'active_support/test_case'
