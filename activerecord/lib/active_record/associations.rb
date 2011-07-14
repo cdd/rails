@@ -1437,7 +1437,7 @@ module ActiveRecord
                   record,
                   reflection.name,
                   reflection.klass,
-                  reflection.dependent_conditions(record, record.class, extra_conditions))
+                  reflection.dependent_conditions(record, record.class.base_class, extra_conditions))
                 end
               when :nullify
                 before_destroy do |record|
@@ -1446,7 +1446,7 @@ module ActiveRecord
                   reflection.name,
                   reflection.klass,
                   reflection.primary_key_name,
-                  reflection.dependent_conditions(record, record.class, extra_conditions))
+                  reflection.dependent_conditions(record, record.class.base_class, extra_conditions))
                 end
               else
                 raise ArgumentError, "The :dependent option expects either :destroy, :delete_all, or :nullify (#{reflection.options[:dependent].inspect})"
