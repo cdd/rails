@@ -125,6 +125,10 @@ class FinderTest < ActiveRecord::TestCase
     end
   end
 
+  def test_exists_on_model_with_after_initialize_method_should_not_blow_up
+    assert_nothing_raised { assert Entrant.exists? }
+  end
+
   def test_find_by_array_of_one_id
     assert_kind_of(Array, Topic.find([ 1 ]))
     assert_equal(1, Topic.find([ 1 ]).length)

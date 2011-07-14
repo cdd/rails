@@ -661,8 +661,8 @@ module ActiveRecord #:nodoc:
       #   # You can use the same string replacement techniques as you can with ActiveRecord#find
       #   Post.find_by_sql ["SELECT title FROM posts WHERE author = ? AND created > ?", author_id, start_date]
       #   > [#<Post:0x36bff9c @attributes={"first_name"=>"The Cheap Man Buys Twice"}>, ...]
-      def find_by_sql(sql)
-        connection.select_all(sanitize_sql(sql), "#{name} Load").collect! { |record| instantiate(record) }
+      def find_by_sql(sql, skip_instantiation = false)
+        connection.select_all(sanitize_sql(sql), "#{name} Load").collect! { |record| skip_instantiation ? record : instantiate(record) }
       end
 
       # Returns true if a record exists in the table that matches the +id+ or
@@ -691,9 +691,10 @@ module ActiveRecord #:nodoc:
       #   Person.exists?(['name LIKE ?', "%#{query}%"])
       #   Person.exists?
       def exists?(id_or_conditions = {})
-        find_initial(
+        find_initial({
           :select => "#{quoted_table_name}.#{primary_key}",
-          :conditions => expand_id_conditions(id_or_conditions)) ? true : false
+          :conditions => expand_id_conditions(id_or_conditions)},
+          :skip_instantiation) ? true : false
       end
 
       # Creates an object (or multiple objects) and saves it to the database, if validations pass.
@@ -1534,9 +1535,9 @@ module ActiveRecord #:nodoc:
       end
 
       private
-        def find_initial(options)
+        def find_initial(options, skip_instantiation = false)
           options.update(:limit => 1)
-          find_every(options).first
+          find_every(options, skip_instantiation).first
         end
 
         def find_last(options)
@@ -1573,14 +1574,14 @@ module ActiveRecord #:nodoc:
           }.join(',')
         end
 
-        def find_every(options)
+        def find_every(options, skip_instantiation = false)
           include_associations = merge_includes(scope(:find, :include), options[:include])
 
           if include_associations.any? && references_eager_loaded_tables?(options)
             records = find_with_associations(options)
           else
-            records = find_by_sql(construct_finder_sql(options))
-            if include_associations.any?
+            records = find_by_sql(construct_finder_sql(options), skip_instantiation)
+            if include_associations.any? && !skip_instantiation
               preload_associations(records, include_associations)
             end
           end
