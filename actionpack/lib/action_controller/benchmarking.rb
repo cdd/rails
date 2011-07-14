@@ -85,6 +85,7 @@ module ActionController #:nodoc:
 
           log_message << " | #{response.status}"
           log_message << " [#{complete_request_uri rescue "unknown"}]"
+          log_message << " [#{request.method.to_s.upcase rescue "unknown"}]"
 
           logger.info(log_message)
           response.headers["X-Runtime"] = "%.0f" % ms
