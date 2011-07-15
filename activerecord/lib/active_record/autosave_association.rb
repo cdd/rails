@@ -282,10 +282,10 @@ module ActiveRecord
         if reflection.options[:autosave]
           association.errors.each_error do |attribute, error|
             attribute = "#{reflection.name}.#{attribute}"
-            errors.add(attribute, error.dup) unless errors.on(attribute)
+            errors.add(attribute, error.dup) unless errors.on(attribute) && errors.on(attribute).include?(error.message)
           end
         else
-          errors.add(reflection.name)
+          errors.add(reflection.name) unless errors.on(reflection.name)
         end
       end
       valid
