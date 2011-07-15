@@ -146,7 +146,11 @@ module ActiveRecord
           super
         else
           load_target
-          @target.send(method, *args)
+          if block_given?
+            @target.send(method, *args) { |*block_args| yield *block_args }
+          else
+            @target.send(method, *args)
+          end
         end
       end
 
