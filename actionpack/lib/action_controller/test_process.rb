@@ -116,7 +116,7 @@ module ActionController #:nodoc:
       @env["action_controller.request.request_parameters"] = {}
       self.query_parameters   = {}
       self.path_parameters    = {}
-      @headers, @request_method, @accepts, @content_type = nil, nil, nil, nil
+      @headers, @request_method, @accepts, @content_type, @format = nil, nil, nil, nil, nil
     end
 
     def user_agent=(user_agent)
