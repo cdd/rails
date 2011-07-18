@@ -375,17 +375,19 @@ module ActiveRecord
         end
         
         def method_missing(method, *args, &block)
-          case method.to_s
-          when 'find_or_create'
-            return find(:first, :conditions => args.first) || create(args.first)
-          when /^find_or_create_by_(.*)$/
-            rest = $1
-            find_args = pull_finder_args_from(DynamicFinderMatch.match(method).attribute_names, *args)
-            return  send("find_by_#{rest}", *find_args) ||
-                    method_missing("create_by_#{rest}", *args, &block)
-          when /^create_by_(.*)$/
-            return create($1.split('_and_').zip(args).inject({}) { |h,kv| k,v=kv ; h[k] = v ; h }, &block)
-          end
+          # CDD: Rolled back change as it does not handle attr_accessible correctly
+          # case method.to_s
+          # when 'find_or_create'
+          #   return find(:first, :conditions => args.first) || create(args.first)
+          # when /^find_or_create_by_(.*)$/
+          #   rest = $1
+          #   find_args = pull_finder_args_from(DynamicFinderMatch.match(method).attribute_names, *args)
+          #   return  send("find_by_#{rest}", *find_args) ||
+          #           method_missing("create_by_#{rest}", *args, &block)
+          # when /^create_by_(.*)$/
+          #   params = $1.split('_and_').zip(args).inject({}) { |h,kv| k,v=kv ; h[k] = v ; h }
+          #   return create(params, &block)
+          # end
 
           if @target.respond_to?(method) || (!@reflection.klass.respond_to?(method) && Class.respond_to?(method))
             if block_given?
