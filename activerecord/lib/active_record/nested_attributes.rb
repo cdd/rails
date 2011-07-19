@@ -285,7 +285,7 @@ module ActiveRecord
           (options[:update_only] || record.id.to_s == attributes['id'].to_s)
         assign_to_or_mark_for_destruction(record, attributes, options[:allow_destroy])
 
-      elsif attributes['id']
+      elsif attributes['id'] && !attributes['id'].blank?
         raise_nested_attributes_record_not_found(association_name, attributes['id'])
 
       elsif !reject_new_record?(association_name, attributes)
