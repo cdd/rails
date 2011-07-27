@@ -453,11 +453,21 @@ class TextHelperTest < ActionView::TestCase
                 :link => :all, :html => { :class => "menu", :target => "_blank" })
   end
   
-  def test_auto_link_with_multiple_trailing_punctuations
+  def test_auto_link_with_brackets_and_trailing_punctuation
     url = "http://youtube.com"
     url_result = generate_result(url)
     assert_equal url_result, auto_link(url)
     assert_equal "(link: #{url_result}).", auto_link("(link: #{url}).")
+    assert_equal "[(link: #{url_result}).]", auto_link("[(link: #{url}).]")
+    assert_equal "([link: #{url_result}]).", auto_link("([link: #{url}]).")
+    assert_equal "(The link is #{url_result}.)", auto_link("(The link is #{url}.)")
+  end
+  
+  def test_auto_link_with_trailing_equals
+    # horrible case of URLs from Reaxys that include a trailing '='
+    url = "http://youtube.com?a="
+    url_result = generate_result(url)
+    assert_equal "#{url_result}.", auto_link("#{url}.")
   end
 
   def test_cycle_class
