@@ -89,6 +89,10 @@ class QueryStringParsingTest < ActionController::IntegrationTest
     assert_parses({"action"=>{"foo"=>[{"bar"=>nil}]}}, "action[foo][][bar]")
   end
 
+  test "array parses without nil" do
+    assert_parses({"action" => ['1']}, "action[]=1&action[]")
+  end
+
   test "query string with empty key" do
     assert_parses(
       { "action" => "create_customer", "full_name" => "David Heinemeier Hansson" },
