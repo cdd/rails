@@ -18,7 +18,7 @@ module Rails
 
     def self.add_frozen_gem_path
       @@paths_loaded ||= begin
-        source_index = Rails::VendorGemSourceIndex.new(Gem.source_index)
+        source_index = Gem::Deprecate.skip_during { Rails::VendorGemSourceIndex.new(Gem.source_index) }
         Gem.clear_paths
         Gem.source_index = source_index
         # loaded before us - we can't change them, so mark them
@@ -75,7 +75,7 @@ module Rails
 
       begin
         dep = Gem::Dependency.new(name, requirement)
-        spec = Gem.source_index.find { |_,s| s.satisfies_requirement?(dep) }.last
+        spec = Gem::Deprecate.skip_during { Gem.source_index.find { |_,s| s.satisfies_requirement?(dep) }.last }
         spec.activate           # a way that exists
       rescue
         gem self.name, self.requirement # <  1.8 unhappy way
