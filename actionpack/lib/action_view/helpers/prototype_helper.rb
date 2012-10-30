@@ -1056,7 +1056,7 @@ module ActionView
           js_options['parameters'] = options[:with]
         end
 
-        if protect_against_forgery? && !options[:form]
+        if protect_against_forgery? && !options[:form] && js_options['method'] != "'get'"
           if js_options['parameters']
             js_options['parameters'] << " + '&"
           else
