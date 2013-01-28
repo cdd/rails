@@ -89,7 +89,11 @@ class QueryStringParsingTest < ActionController::IntegrationTest
     assert_parses({"action"=>{"foo"=>[{"bar"=>nil}]}}, "action[foo][][bar]")
   end
 
+<<<<<<< HEAD
   test "array parses without nil" do
+=======
+  def test_array_parses_without_nil
+>>>>>>> 1169552479d6800e6729fb599dcb4a987ef13a6a
     assert_parses({"action" => ['1']}, "action[]=1&action[]")
   end
 
