@@ -134,26 +134,10 @@ module TMail
         convert_to(Base64.decode(text), to, from)
       end
 
-      begin
-        require 'iconv'
-        def convert_to(text, to, from)
-          return text unless to && from
-          text ? Iconv.iconv(to, from, text).first : ""
-        rescue Iconv::IllegalSequence, Iconv::InvalidEncoding, Errno::EINVAL
-          # the 'from' parameter specifies a charset other than what the text
-          # actually is...not much we can do in this case but just return the
-          # unconverted text.
-          #
-          # Ditto if either parameter represents an unknown charset, like
-          # X-UNKNOWN.
-          text
-        end
-      rescue LoadError
-        # Not providing quoting support
-        def convert_to(text, to, from)
-          warn "Action Mailer: iconv not loaded; ignoring conversion from #{from} to #{to} (#{__FILE__}:#{__LINE__})"
-          text
-        end
+      # Not providing quoting support
+      def convert_to(text, to, from)
+        warn "Action Mailer: iconv not loaded; ignoring conversion from #{from} to #{to} (#{__FILE__}:#{__LINE__})"
+        text
       end
       
       alias_method :convert_to_without_fallback_on_iso_8859_1, :convert_to

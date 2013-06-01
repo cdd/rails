@@ -1,6 +1,5 @@
 # encoding: utf-8
 require 'singleton'
-require 'iconv'
 require 'kconv'
 
 module ActiveSupport
@@ -274,14 +273,7 @@ module ActiveSupport
       parameterized_string.downcase
     end
 
-
-    # Replaces accented characters with their ascii equivalents.
-    def transliterate(string)
-      Iconv.iconv('ascii//ignore//translit', 'utf-8', string).to_s
-    end
-
     if RUBY_VERSION >= '1.9'
-      undef_method :transliterate
       def transliterate(string)
         warn "Ruby 1.9 doesn't support Unicode normalization yet"
         string.dup
