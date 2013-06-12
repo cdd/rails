@@ -438,26 +438,36 @@ module ActionView
         concat("</fieldset>".html_safe)
       end
 
+      # Creates the hidden UTF8 enforcer tag. Override this method in a helper
+      # to customize the tag.
+      def utf8_enforcer_tag
+        tag(:input, :type => "hidden", :name => "utf8", :value => "&#x2713;".html_safe)
+      end
+
       private
         def html_options_for_form(url_for_options, options, *parameters_for_url)
           options.stringify_keys.tap do |html_options|
             html_options["enctype"] = "multipart/form-data" if html_options.delete("multipart")
             html_options["action"]  = url_for(url_for_options, *parameters_for_url)
+            html_options["accept-charset"] = "UTF-8"
           end
         end
 
         def extra_tags_for_form(html_options)
-          case method = html_options.delete("method").to_s
+          method_tag = case method = html_options.delete("method").to_s
             when /^get$/i # must be case-insentive, but can't use downcase as might be nil
               html_options["method"] = "get"
               ''
             when /^post$/i, "", nil
               html_options["method"] = "post"
-              protect_against_forgery? ? content_tag(:div, token_tag, :style => 'margin:0;padding:0;display:inline') : ''
+              protect_against_forgery? ? token_tag : ''
             else
               html_options["method"] = "post"
-              content_tag(:div, tag(:input, :type => "hidden", :name => "_method", :value => method) + token_tag, :style => 'margin:0;padding:0;display:inline')
+              tag(:input, :type => "hidden", :name => "_method", :value => method) + token_tag
           end
+          
+          tags = utf8_enforcer_tag << method_tag
+          content_tag(:div, tags, :style => 'margin:0;padding:0;display:inline')
         end
 
         def form_tag_html(html_options)
