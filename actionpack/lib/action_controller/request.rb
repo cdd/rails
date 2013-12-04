@@ -423,13 +423,13 @@ EOM
 
     # Override Rack's GET method to support indifferent access
     def GET
-      @env["action_controller.request.query_parameters"] ||= normalize_parameters(super)
+      @env["action_controller.request.query_parameters"] ||= deep_munge(normalize_parameters(super) || {})
     end
     alias_method :query_parameters, :GET
 
     # Override Rack's POST method to support indifferent access
     def POST
-      @env["action_controller.request.request_parameters"] ||= normalize_parameters(super)
+      @env["action_controller.request.request_parameters"] ||= deep_munge(normalize_parameters(super) || {})
     end
     alias_method :request_parameters, :POST
 
@@ -514,28 +514,5 @@ EOM
           value
         end
       end
-    protected
-
-    # Remove nils from the params hash
-    def deep_munge(hash)
-      keys = hash.keys.find_all { |k| hash[k] == [nil] }
-      keys.each { |k| hash[k] = nil }
-
-      hash.each_value do |v|
-        case v
-        when Array
-          v.grep(Hash) { |x| deep_munge(x) }
-          v.compact!
-        when Hash
-          deep_munge(v)
-        end
-      end
-
-      hash
-    end
-
-    def parse_query(qs)
-      deep_munge(super)
-    end
   end
 end
