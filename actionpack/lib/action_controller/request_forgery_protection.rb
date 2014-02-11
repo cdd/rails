@@ -2,6 +2,9 @@ module ActionController #:nodoc:
   class InvalidAuthenticityToken < ActionControllerError #:nodoc:
   end
 
+  class InvalidCrossOriginRequest < ActionControllerError #:nodoc:
+  end
+    
   module RequestForgeryProtection
     def self.included(base)
       base.class_eval do
@@ -66,7 +69,8 @@ module ActionController #:nodoc:
       # * <tt>:only/:except</tt> - Passed to the <tt>before_filter</tt> call.  Set which actions are verified.
       def protect_from_forgery(options = {})
         self.request_forgery_protection_token ||= :authenticity_token
-        before_filter :verify_authenticity_token, :only => options.delete(:only), :except => options.delete(:except)
+        before_filter :verify_authenticity_token, :only => options[:only], :except => options[:except]
+        after_filter :verify_same_origin_request, :only => options[:only], :except => options[:except]
         if options[:secret] || options[:digest]
           ActiveSupport::Deprecation.warn("protect_from_forgery only takes :only and :except options now. :digest and :secret have no effect", caller)
         end
@@ -76,11 +80,44 @@ module ActionController #:nodoc:
     protected
       # The actual before_filter that is used.  Modify this to change how you handle unverified requests.
       def verify_authenticity_token
+        mark_for_same_origin_verification!
         verified_request? || handle_unverified_request
       end
 
       def handle_unverified_request
         reset_session
+      end
+
+      CROSS_ORIGIN_JAVASCRIPT_WARNING = "Security warning: an embedded " \
+        "<script> tag on another site requested protected JavaScript. " \
+        "If you know what you're doing, go ahead and disable forgery " \
+        "protection on this action to permit cross-origin JavaScript embedding."
+      private_constant :CROSS_ORIGIN_JAVASCRIPT_WARNING
+
+      # If `verify_authenticity_token` was run (indicating that we have
+      # forgery protection enabled for this request) then also verify that
+      # we aren't serving an unauthorized cross-origin response.
+      def verify_same_origin_request
+        if marked_for_same_origin_verification? && non_xhr_javascript_response?
+          logger.warn CROSS_ORIGIN_JAVASCRIPT_WARNING if logger
+          raise ActionController::InvalidCrossOriginRequest, CROSS_ORIGIN_JAVASCRIPT_WARNING
+        end
+      end
+
+      # GET requests are checked for cross-origin JavaScript after rendering.
+      def mark_for_same_origin_verification!
+        @marked_for_same_origin_verification = request.get?
+      end
+
+      # If the `verify_authenticity_token` before_action ran, verify that
+      # JavaScript responses are only served to same-origin GET requests.
+      def marked_for_same_origin_verification?
+        @marked_for_same_origin_verification ||= false
+      end
+
+      # Check for cross-origin JavaScript responses.
+      def non_xhr_javascript_response?
+        response.content_type =~ %r(\Atext/javascript) && !request.xhr?
       end
       
       # Returns true or false if a request is verified.  Checks:
