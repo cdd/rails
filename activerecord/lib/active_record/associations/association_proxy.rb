@@ -142,7 +142,7 @@ module ActiveRecord
       end
 
       def send(method, *args)
-        if proxy_respond_to?(method)
+        if proxy_respond_to?(method, true)
           super
         else
           load_target
@@ -215,7 +215,7 @@ module ActiveRecord
         # Forwards any missing method call to the \target.
         def method_missing(method, *args, &block)
           if load_target
-            if @target.respond_to?(method)
+            if @target.respond_to?(method, true)
               @target.send(method, *args, &block)
             else
               super
