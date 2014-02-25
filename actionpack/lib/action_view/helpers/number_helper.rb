@@ -42,7 +42,7 @@ module ActionView
             number.starts_with?('-') ? number.slice!(1..-1) : number
           end
           str << " x #{extension}" unless extension.blank?
-          str
+          ERB::Util.html_escape(str)
         rescue
           number
         end
@@ -73,6 +73,8 @@ module ActionView
       def number_to_currency(number, options = {})
         options.symbolize_keys!
 
+        options[:format]    = ERB::Util.html_escape(options[:format]) if options[:format]
+                
         defaults  = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
         currency  = I18n.translate(:'number.currency.format', :locale => options[:locale], :raise => true) rescue {}
         defaults  = defaults.merge(currency)
@@ -155,6 +157,9 @@ module ActionView
         options = args.extract_options!
         options.symbolize_keys!
 
+        options[:delimiter] = ERB::Util.html_escape(options[:delimiter]) if options[:delimiter]
+        options[:separator] = ERB::Util.html_escape(options[:separator]) if options[:separator]
+        
         defaults = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
 
         unless args.empty?
@@ -199,6 +204,9 @@ module ActionView
         options = args.extract_options!
         options.symbolize_keys!
 
+        options[:delimiter] = ERB::Util.html_escape(options[:delimiter]) if options[:delimiter]
+        options[:separator] = ERB::Util.html_escape(options[:separator]) if options[:separator]
+        
         defaults           = I18n.translate(:'number.format', :locale => options[:locale], :raise => true) rescue {}
         precision_defaults = I18n.translate(:'number.precision.format', :locale => options[:locale],
                                                                         :raise => true) rescue {}
