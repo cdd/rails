@@ -174,7 +174,7 @@ module ActiveRecord
     # Special method sent by the observed class when it is inherited.
     # Passes the new subclass.
     def observed_class_inherited(subclass) #:nodoc:
-      self.class.observe(observed_classes + [subclass])
+      self.class.observe(observed_classes.to_a + [subclass])
       add_observer!(subclass)
     end
 
