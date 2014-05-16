@@ -784,6 +784,17 @@ class RenderTest < ActionController::TestCase
     assert_template 'test/hyphen-ated'
   end
 
+  def test_render_default_template_does_not_allow_directory_traversal
+    old_template_loading = ActionView::Base.cache_template_loading
+    old_view_paths = ActionController::Base.view_paths
+    ActionView::Base.cache_template_loading = false
+    ActionController::Base.view_paths = FIXTURE_LOAD_PATH
+    assert_raise(ActionController::UnknownAction) { get :'../shared' }
+  ensure
+    ActionView::Base.cache_template_loading = old_template_loading
+    ActionController::Base.view_paths = old_view_paths
+  end
+
   def test_render
     get :render_hello_world
     assert_template "test/hello_world"

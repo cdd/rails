@@ -1354,7 +1354,11 @@ module ActionController #:nodoc:
       end
 
       def assign_names
-        @action_name = (params['action'] || 'index')
+        @action_name = (sanitize_action_name(params['action']) || 'index')
+      end
+
+      def sanitize_action_name(action_name)
+        action_name if action_name.to_s !~ Regexp.new(File::SEPARATOR)
       end
 
       def action_methods
