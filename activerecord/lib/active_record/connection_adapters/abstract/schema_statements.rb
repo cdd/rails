@@ -280,10 +280,10 @@ module ActiveRecord
         end
 
         if index_name.length > index_name_length
-          raise ArgumentError, "Index name '#{index_name}' on table '#{table_name}' is too long; the limit is #{index_name_length} characters. Skipping.")
+          raise ArgumentError, "Index name '#{index_name}' on table '#{table_name}' is too long; the limit is #{index_name_length} characters. Skipping."
         end
         if index_exists?(table_name, index_name, false)
-          raise ArgumentError, "Index name '#{index_name}' on table '#{table_name}' already exists. Skipping.")
+          raise ArgumentError, "Index name '#{index_name}' on table '#{table_name}' already exists. Skipping."
         end
         quoted_column_names = quoted_columns_for_index(column_names, options).join(", ")
 
