@@ -580,14 +580,17 @@ module ActionView
         end
 
         def confirm_javascript_function(confirm)
+          throw "CONFIRM CALLED"
           "confirm('#{escape_javascript(confirm)}')"
         end
 
         def popup_javascript_function(popup)
+          throw "POPUP CALLED"
           popup.is_a?(Array) ? "window.open(this.href,'#{popup.first}','#{popup.last}');" : "window.open(this.href);"
         end
 
         def method_javascript_function(method, url = '', href = nil)
+          throw "METHOD CALLED"
           action = (href && url.size > 0) ? "'#{url}'" : 'this.href'
           submit_function =
             "var f = document.createElement('form'); f.style.display = 'none'; " +
