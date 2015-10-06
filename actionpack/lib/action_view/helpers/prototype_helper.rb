@@ -253,7 +253,6 @@ module ActionView
       #     { :update => "posts", :url => { :action => "destroy", :id => post.id } },
       #     :href => url_for(:action => "destroy", :id => post.id)
       def link_to_remote(name, options = {}, html_options = nil)
-        throw "CALLED PROTOTYPEHELPER"
         link_to_function(name, remote_function(options), html_options || options.delete(:html))
       end
 
@@ -262,7 +261,6 @@ module ActionView
       # The options for specifying the target with :url
       # and defining callbacks is the same as link_to_remote.
       def button_to_remote(name, options = {}, html_options = {})
-        throw "CALLED PROTOTYPEHELPER"
         button_to_function(name, remote_function(options), html_options)
       end
 
@@ -292,7 +290,6 @@ module ActionView
       #  periodically_call_remote(:url => 'update', :frequency => '20', :update => 'news_block')
       #
       def periodically_call_remote(options = {})
-        throw "CALLED PROTOTYPEHELPER"
          frequency = options[:frequency] || 10 # every ten seconds by default
          code = "new PeriodicalExecuter(function() {#{remote_function(options)}}, #{frequency})"
          javascript_tag(code)
@@ -332,7 +329,6 @@ module ActionView
       #     <div><%= submit_tag 'Save' %></div>
       #   <% end -%>
       def form_remote_tag(options = {}, &block)
-        throw "CALLED PROTOTYPEHELPER"
         options[:form] = true
 
         options[:html] ||= {}
@@ -378,7 +374,6 @@ module ActionView
       #
       # See FormHelper#form_for for additional semantics.
       def remote_form_for(record_or_name_or_array, *args, &proc)
-        throw "CALLED PROTOTYPEHELPER"
         options = args.extract_options!
 
         case record_or_name_or_array
@@ -424,7 +419,6 @@ module ActionView
       #
       # <tt>options</tt> argument is the same as in form_remote_tag.
       def submit_to_remote(name, value, options = {})
-        throw "CALLED PROTOTYPEHELPER"
         options[:with] ||= 'Form.serialize(this.form)'
 
         html_options = options.delete(:html) || {}
@@ -437,7 +431,6 @@ module ActionView
       # that +form_remote_tag+ can call in <tt>:complete</tt> to evaluate a multiple
       # update return document using +update_element_function+ calls.
       def evaluate_remote_response
-        throw "CALLED PROTOTYPEHELPER"
         "eval(request.responseText)"
       end
 
@@ -453,7 +446,6 @@ module ActionView
       #     <option value="1">World</option>
       #   </select>
       def remote_function(options)
-        throw "CALLED PROTOTYPEHELPER"
         javascript_options = options_for_ajax(options)
 
         update = ''
@@ -553,7 +545,6 @@ module ActionView
       #
       #
       def observe_field(field_id, options = {})
-        throw "CALLED PROTOTYPEHELPER"
         if options[:frequency] && options[:frequency] > 0
           build_observer('Form.Element.Observer', field_id, options)
         else
@@ -1082,7 +1073,6 @@ module ActionView
       end
 
       def build_observer(klass, name, options = {})
-        throw "CALLED PROTOTYPEHELPER"
         if options[:with] && (options[:with] !~ /[\{=(.]/)
           options[:with] = "'#{options[:with]}=' + encodeURIComponent(value)"
         else
