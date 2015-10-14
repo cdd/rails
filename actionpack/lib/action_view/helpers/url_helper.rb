@@ -585,7 +585,6 @@ module ActionView
         end
 
         def popup_javascript_function(popup)
-          throw "POPUP CALLED"
           popup.is_a?(Array) ? "window.open(this.href,'#{popup.first}','#{popup.last}');" : "window.open(this.href);"
         end
 
